@@ -1,4 +1,8 @@
-# Awesome AI Ops Engineer Interview Q&A 🤖⚙️🔁
+<p align="center">
+  <img src="assets/banner.svg" alt="Awesome AI Ops Engineer Interview Q&A Banner" />
+</p>
+
+# Awesome AI Ops Engineer Interview Q&A 🤖⚙️🔁✨
 
 [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
@@ -18,40 +22,40 @@ Every answer aims to be **concise, correct, and interview-ready** — the kind o
 
 | # | Topic | Questions | Difficulty Mix |
 |---|-------|-----------|-----------------|
-| 01 | [ML/LLM Systems Fundamentals & Lifecycle](topics/01-ml-systems-fundamentals.md) | 12 | Easy → Medium |
-| 02 | [Model Deployment & Serving Infrastructure](topics/02-model-deployment-serving.md) | 12 | Medium → Hard |
-| 03 | [CI/CD & Automation for ML Pipelines](topics/03-cicd-ml-pipelines.md) | 12 | Medium → Hard |
-| 04 | [Monitoring, Observability & Drift Detection](topics/04-monitoring-observability-drift.md) | 11 | Medium → Hard |
-| 05 | [Data & Feature Pipelines / Feature Stores](topics/05-data-feature-pipelines.md) | 11 | Medium |
-| 06 | [LLMOps: Prompting, RAG & Evaluation](topics/06-llmops-rag-evaluation.md) | 12 | Medium → Hard |
-| 07 | [Vector Databases & Retrieval Systems](topics/07-vector-databases-retrieval.md) | 11 | Medium → Hard |
-| 08 | [GPU Infrastructure, Scaling & Cost Optimization](topics/08-gpu-infra-scaling-cost.md) | 11 | Medium → Hard |
-| 09 | [Containers, Kubernetes & Orchestration for ML](topics/09-containers-kubernetes-ml.md) | 11 | Medium → Hard |
-| 10 | [Cloud & MLOps Platforms](topics/10-cloud-mlops-platforms.md) | 9 | Easy → Medium |
-| 11 | [Security, Governance & Responsible AI Ops](topics/11-security-governance-responsible-ai.md) | 10 | Medium → Hard |
-| 12 | [Incident Response & Reliability (SRE for ML/LLM Systems)](topics/12-incident-response-reliability.md) | 10 | Medium → Hard |
-| 13 | [Scenario-based & Behavioral](topics/13-scenario-behavioral.md) | 11 | Medium → Hard |
+| 01 | 🏗️ [ML/LLM Systems Fundamentals & Lifecycle](topics/01-ml-systems-fundamentals.md) | 12 | 🟢 Easy → 🟡 Medium |
+| 02 | 🚀 [Model Deployment & Serving Infrastructure](topics/02-model-deployment-serving.md) | 12 | 🟡 Medium → 🔴 Hard |
+| 03 | 🔄 [CI/CD & Automation for ML Pipelines](topics/03-cicd-ml-pipelines.md) | 12 | 🟡 Medium → 🔴 Hard |
+| 04 | 🔍 [Monitoring, Observability & Drift Detection](topics/04-monitoring-observability-drift.md) | 11 | 🟡 Medium → 🔴 Hard |
+| 05 | 🚰 [Data & Feature Pipelines / Feature Stores](topics/05-data-feature-pipelines.md) | 11 | 🟡 Medium |
+| 06 | 🧠 [LLMOps: Prompting, RAG & Evaluation](topics/06-llmops-rag-evaluation.md) | 12 | 🟡 Medium → 🔴 Hard |
+| 07 | 🗄️ [Vector Databases & Retrieval Systems](topics/07-vector-databases-retrieval.md) | 11 | 🟡 Medium → 🔴 Hard |
+| 08 | 💸 [GPU Infrastructure, Scaling & Cost Optimization](topics/08-gpu-infra-scaling-cost.md) | 11 | 🟡 Medium → 🔴 Hard |
+| 09 | 🐳 [Containers, Kubernetes & Orchestration for ML](topics/09-containers-kubernetes-ml.md) | 11 | 🟡 Medium → 🔴 Hard |
+| 10 | ☁️ [Cloud & MLOps Platforms](topics/10-cloud-mlops-platforms.md) | 9 | 🟢 Easy → 🟡 Medium |
+| 11 | 🛡️ [Security, Governance & Responsible AI Ops](topics/11-security-governance-responsible-ai.md) | 10 | 🟡 Medium → 🔴 Hard |
+| 12 | 🚨 [Incident Response & Reliability (SRE for ML/LLM Systems)](topics/12-incident-response-reliability.md) | 10 | 🟡 Medium → 🔴 Hard |
+| 13 | 🎭 [Scenario-based & Behavioral](topics/13-scenario-behavioral.md) | 11 | 🟡 Medium → 🔴 Hard |
 
 **Total: 143 questions** in v1, growing with community contributions.
 
 ---
 
-## 🧭 How to Use This Repo
+## 🧭 How to Use This Repo 🎯
 
 - **Cramming for an interview next week?** Start with the topic weighted heaviest for your target role (see below), and read the "Follow-up" notes — interviewers almost always dig deeper.
 - **Deep prep over weeks?** Work through every file top to bottom — for the hands-on topics (deployment, K8s, CI/CD), try standing up a small end-to-end pipeline yourself rather than only reading the answer.
 - **Interviewing candidates?** Use these as a base question bank — mix easy/medium/hard per round, and use the scenario/behavioral questions to gauge operational judgment, not just tool familiarity.
 
-### Suggested focus by role
+### 🎯 Suggested focus by role
 
 | Role | Prioritize |
 |------|------------|
-| MLOps Engineer | CI/CD for ML, Data/Feature Pipelines, Model Deployment, Monitoring/Drift |
-| LLMOps Engineer | LLMOps/RAG/Evaluation, Vector Databases, GPU Infra/Cost, Security/Governance |
-| ML Platform Engineer | Containers/Kubernetes, Cloud/MLOps Platforms, GPU Infra, CI/CD |
-| ML Site Reliability Engineer (SRE) | Incident Response/Reliability, Monitoring/Observability, Model Deployment |
-| AI Infrastructure/Cost Engineer | GPU Infra/Scaling/Cost, Kubernetes, Cloud Platforms |
-| AI Governance/Security Engineer | Security/Governance/Responsible AI, LLMOps/Evaluation, ML Fundamentals |
+| 🛠️ MLOps Engineer | CI/CD for ML, Data/Feature Pipelines, Model Deployment, Monitoring/Drift |
+| 🤖 LLMOps Engineer | LLMOps/RAG/Evaluation, Vector Databases, GPU Infra/Cost, Security/Governance |
+| 🏗️ ML Platform Engineer | Containers/Kubernetes, Cloud/MLOps Platforms, GPU Infra, CI/CD |
+| 🚨 ML Site Reliability Engineer (SRE) | Incident Response/Reliability, Monitoring/Observability, Model Deployment |
+| 💰 AI Infrastructure/Cost Engineer | GPU Infra/Scaling/Cost, Kubernetes, Cloud Platforms |
+| 🛡️ AI Governance/Security Engineer | Security/Governance/Responsible AI, LLMOps/Evaluation, ML Fundamentals |
 
 ---
 
