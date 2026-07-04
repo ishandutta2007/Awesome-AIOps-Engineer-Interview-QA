@@ -1,0 +1,75 @@
+# 🔒 Security, Governance & Responsible AI Ops
+
+[← Back to main README](../README.md)
+
+---
+
+### Q: What is model access control, and what specific risks does an under-secured model serving endpoint introduce beyond typical API security concerns?
+
+**Answer:**
+Model access control governs who/what can invoke a model's inference endpoint and, separately, who can access/modify the underlying model artifact itself. Beyond standard API security concerns (authentication, authorization, rate limiting), under-secured model endpoints introduce ML-specific risks: **model extraction/theft** (an attacker with sufficiently unrestricted query access to a model can, in some cases, systematically probe it to reconstruct a functionally similar copy of a proprietary model, effectively stealing significant R&D investment without ever accessing the underlying weights directly), and **model inversion/membership inference attacks** (carefully crafted queries can sometimes reveal information about the model's training data, a serious concern if that training data included sensitive/private information) — these risks mean model endpoint security needs to consider not just "who can call this API" but also "what could a sufficiently persistent, well-resourced attacker learn or extract through allowed, seemingly normal-looking query patterns over time."
+
+---
+
+### Q: What is data poisoning as a threat to ML systems, and what operational safeguards can an AI Ops engineer help implement to reduce this risk in a continuously-retraining pipeline?
+
+**Answer:**
+Data poisoning occurs when an attacker deliberately injects malicious or manipulated data into a system's training data pipeline, aiming to corrupt the resulting model's behavior in a way that benefits the attacker (e.g., degrading overall model accuracy, or more subtly, causing the model to behave incorrectly for specific attacker-chosen inputs while appearing normal otherwise). This is a particularly relevant concern for **continuously-retraining pipelines** that incorporate new data (including, in some architectures, user-generated feedback/interactions) with limited human review. Operational safeguards: **anomaly detection on incoming training data** (flagging unusual patterns/outliers before they're incorporated into a retraining run, similar in spirit to data validation checks discussed in the data pipelines section, but specifically oriented toward detecting adversarial manipulation rather than just organic data quality issues), **provenance tracking** for training data sources (understanding and being able to audit exactly where training data originated, especially any user-contributed or externally-sourced data), and **staged rollout/evaluation** of any newly retrained model (the champion/challenger evaluation gates discussed earlier serve as a general safeguard here too, since a successfully poisoned model would ideally be caught by significantly degraded evaluation metrics before full production promotion).
+
+---
+
+### Q: What is model supply chain security, and why does the practice of pulling pre-trained models/weights from public model hubs (e.g., Hugging Face) introduce a supply chain risk analogous to open-source software dependency risk?
+
+**Answer:**
+Model supply chain security addresses the risk that a pre-trained model, dataset, or model-related dependency obtained from an external source could be **malicious or compromised** — analogous to how a malicious package published to a public software package registry (npm, PyPI) can compromise downstream consumers. Specific risks include: a model file format that allows **embedded malicious code execution upon loading** (some older/less safe serialization formats, like Python's pickle-based formats, can execute arbitrary code when deserialized — a well-known concrete risk, which is part of why safer formats like `safetensors` have gained adoption specifically to mitigate this), and simply a **model with subtly poisoned/backdoored behavior** baked in during its original training, which could be difficult to detect through normal evaluation if the backdoor is designed to only trigger on specific, unusual inputs. Mitigations include preferring safer serialization formats, scanning/verifying model provenance and checksums, and applying the same "trust but verify" scrutiny to externally-sourced models that a mature security practice would apply to any other third-party software dependency.
+
+---
+
+### Q: What is differential privacy in the context of ML systems, and at what point in an ML pipeline would an AI Ops engineer need to actually operationalize/enforce it, versus it being purely a data science/algorithm design concern?
+
+**Answer:**
+Differential privacy provides a mathematically rigorous guarantee that a model's output/training process doesn't reveal too much specific information about any single individual's data in the training set, typically implemented by adding calibrated statistical noise during training. While the underlying algorithm design (choosing the privacy budget/noise level) is often a data science/research decision, an **AI Ops engineer's operational responsibilities** include: ensuring the differential privacy mechanism is **correctly and consistently applied across the actual production training pipeline** (not just a research notebook demonstration), **tracking and enforcing privacy budget consumption** across potentially many training runs over time (since differential privacy guarantees typically degrade/consume a finite "budget" with repeated use on the same underlying data, requiring operational tracking to ensure the cumulative guarantee isn't silently violated), and building the **monitoring/auditing infrastructure** to verify and demonstrate compliance with the intended privacy guarantees, especially for regulated use cases where this compliance may need to be formally documented/audited.
+
+---
+
+### Q: What is model cards / system cards documentation, and why has this become an increasingly expected operational/governance practice for organizations deploying ML models, especially in regulated or high-stakes domains?
+
+**Answer:**
+A model card is a structured documentation artifact describing a model's **intended use cases, known limitations, training data characteristics, performance across relevant subgroups, and ethical considerations** — providing transparency for anyone deploying, auditing, or relying on that model, beyond what's typically captured in purely technical model registry metadata. This has become an increasingly expected practice because: **regulatory frameworks in various jurisdictions increasingly require this kind of documented transparency** for certain categories of AI systems, **downstream consumers of a model** (other teams within an organization, or external users of an API) need to understand a model's actual appropriate use boundaries to avoid misapplying it to situations it wasn't designed/validated for, and maintaining this documentation **as a living artifact tied to the model registry** (updated as the model is retrained/revalidated) is increasingly treated as a core governance responsibility that AI Ops tooling/processes need to support and enforce, rather than an optional afterthought.
+
+---
+
+### Q: What is the principle of least privilege as applied specifically to ML pipeline service accounts (e.g., a training job's access to data, or a serving endpoint's access to a feature store), and give a concrete example of an overly permissive ML pipeline configuration that would violate it.
+
+**Answer:**
+Least privilege means each component of an ML pipeline should have **only the minimum access actually required for its specific function**, not broad standing access "just in case." A concrete violation example: a **training job's service account granted broad read/write access to an entire production database or data lake**, when it actually only needs **read-only access to a specific, well-defined training dataset location** — this overly broad access means that if the training job's code or environment is ever compromised (e.g., via a malicious dependency pulled in during setup, or a vulnerability in a library it uses), the resulting blast radius extends far beyond what should have been possible, potentially exposing or corrupting unrelated production data the training job had no legitimate need to touch at all. Properly scoping IAM permissions/service account access per specific pipeline component (training jobs, serving endpoints, monitoring systems each getting distinctly scoped, minimal access) is a foundational, often underappreciated AI Ops security responsibility.
+
+---
+
+### Q: What is red-teaming for AI/LLM systems, and how does this practice differ operationally from traditional software penetration testing?
+
+**Answer:**
+AI/LLM red-teaming involves deliberately probing a model/system for problematic behaviors — generating harmful content, being manipulated via prompt injection, exhibiting biased or unfair outputs, or leaking sensitive training data — using both automated adversarial testing tools and human red-teamers specifically trained to creatively probe for these AI-specific failure modes. This differs from traditional software penetration testing in that the "vulnerabilities" being sought are often **behavioral and probabilistic rather than discrete technical flaws** — there's frequently no single definitive "patch" the way there is for a traditional software vulnerability like SQL injection; addressing a red-teaming finding might require prompt/guardrail adjustments, additional fine-tuning, or architectural changes to how the model's outputs are used downstream, and even after mitigation, the underlying probabilistic model may still occasionally exhibit the problematic behavior under different or novel adversarial framing — requiring **ongoing, iterative red-teaming** rather than a one-time "find and fix" testing cycle, and an AI Ops team typically needs to operationalize this as a recurring practice integrated into the deployment pipeline (similar to the evaluation harness discussed in the LLMOps section) rather than a one-off pre-launch activity.
+
+---
+
+### Q: What is an AI governance/model risk management framework, and what operational role does an AI Ops team typically play in supporting an organization's broader AI governance program (which is often owned more by legal/compliance/risk functions)?
+
+**Answer:**
+An AI governance framework establishes organization-wide policies, approval processes, and risk classification criteria for how AI/ML models are developed, validated, deployed, and monitored — often driven by legal, compliance, or dedicated AI risk/ethics functions rather than the engineering team itself. The AI Ops team's operational role typically includes: **implementing the technical controls/gates** the governance framework requires (e.g., building the automated fairness/bias evaluation checks discussed earlier as an enforced CI/CD promotion gate, not just a recommended best practice), **providing the auditability/traceability infrastructure** governance and compliance reviews need (model lineage, decision logs, monitoring history readily available for audit rather than requiring ad-hoc reconstruction), and **serving as the technical bridge** between governance policy intent (often written by non-engineers) and its concrete, correctly-implemented technical enforcement in the actual production ML systems — this collaborative relationship between AI Ops (technical implementation) and governance/risk functions (policy and risk tolerance definition) is an increasingly important, distinct working relationship as organizations mature their AI governance practices.
+
+---
+
+### Q: What is output/content filtering (guardrails) for a production LLM application, and what's the tradeoff between implementing guardrails at the application layer versus relying solely on a model's built-in safety training?
+
+**Answer:**
+Guardrails are additional filtering/validation layers applied to an LLM application's inputs and/or outputs — checking for policy violations, harmful content, PII leakage, or other undesired patterns — implemented **around** the underlying model, separate from whatever safety behavior is built into the model itself through its own training. Relying **solely on a model's built-in safety training** has real limitations: safety behavior baked into a model during training can potentially be bypassed via prompt injection or adversarial framing (jailbreaking), and different applications built on the same underlying model may have **different, application-specific policy requirements** (e.g., a children's education app needing much stricter content filtering than a general-purpose coding assistant) that a single model's general-purpose safety training can't be expected to precisely match for every possible downstream use case. Application-layer guardrails provide an **additional, independently-controllable safety layer** specifically tailored to the application's actual requirements and risk tolerance, and critically, provide **defense in depth** — if the underlying model's safety training is ever bypassed by a novel adversarial technique, a well-designed independent guardrail layer can still catch the resulting problematic output before it reaches an end user.
+
+---
+
+### Q: How would you design an incident response process specifically for an "AI safety incident" (e.g., a production model generating harmful, biased, or clearly incorrect high-stakes output), and how might this differ from a standard software/security incident response process?
+
+**Answer:**
+Many standard incident response fundamentals still apply (rapid detection, containment, root-cause investigation, post-incident review), but an AI safety incident process needs some distinct additions: **fast, reliable containment mechanisms specific to model behavior** (e.g., the ability to immediately roll back to a previous model/prompt version, or activate stricter guardrail filtering, functioning as the AI-specific equivalent of a security "kill switch"), **a clear decision framework and escalation path involving non-engineering stakeholders** (legal, trust & safety, communications) much earlier and more routinely than a typical infrastructure incident might require, given that AI safety incidents often carry significant reputational, ethical, or regulatory dimensions beyond pure technical impact, and **root-cause investigation methodology specific to probabilistic model behavior** (e.g., was this a one-off statistical edge case unlikely to recur, or does it reveal a systematic gap in the model/prompt/guardrail design likely to keep producing similar problems) — this last point is genuinely different from typical software incidents, where a root cause is usually a discrete, fixable bug, whereas an AI safety incident's root cause might be a more fundamental, harder-to-fully-eliminate limitation of the underlying probabilistic system requiring risk mitigation rather than a definitive "fix."
+
+---
